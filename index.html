@@ -36,11 +36,13 @@ input[type=range]::-webkit-slider-runnable-track{width:100%;height:8px;backgroun
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:24px;width:24px;border-radius:50%;background:var(--cobalt);margin-top:-8px;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:transform .1s}
 input[type=range]::-webkit-slider-thumb:active{transform:scale(1.1)}
 
-/* Barra de Faixas (Termômetro) */
+/* Barra de Faixas (Termômetro Clicável) */
 .tier-bar{display:flex;margin-top:16px;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--bg)}
-.tier-seg{flex:1;text-align:center;padding:10px 4px;font-size:.85rem;color:var(--mute);border-right:1px solid var(--line);transition:all .3s ease}
+.tier-seg{flex:1;text-align:center;padding:10px 4px;font-size:.85rem;color:var(--mute);border-right:1px solid var(--line);transition:all .3s ease;cursor:pointer;user-select:none}
 .tier-seg:last-child{border-right:none}
+.tier-seg:hover{background:var(--line);color:var(--ink)}
 .tier-seg.active{background:var(--cobalt);color:#fff;font-weight:600;font-size:.95rem;transform:scale(1.02);box-shadow:0 2px 8px rgba(0,0,0,.15);z-index:1}
+.tier-seg.active:hover{background:var(--cobalt);color:#fff}
 .tier-hint{font-size:.88rem;color:var(--mute);margin:8px 0 0;font-style:italic;text-align:center}
 
 .chk{display:flex;gap:10px;align-items:flex-start;margin:10px 0;font-weight:400}
@@ -102,6 +104,7 @@ td:last-child{text-align:right;white-space:nowrap}
     <span class="hint" id="sug"></span>
   </div>
   <input id="aq" type="range" min="1" max="30" step="1" value="17">
+  
   <div class="tier-bar" id="tierBar">
     <div class="tier-seg" data-index="0">1 a 15</div>
     <div class="tier-seg" data-index="1">16 a 25</div>
@@ -235,9 +238,7 @@ function calc(){
   }
 
   const sug=Math.max(1,Math.round(conv/P.pessoasPorAquarela));
-  // Se a sugestão for maior que o teto de 30, avisa.
-  const sugText = sug > 30 ? "Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas (máximo 30 no orçamento online)." : "Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas.";
-  $("sug").textContent=sugText;
+  $("sug").textContent="Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas.";
 
   $("cap").innerHTML = "<b>Tempo de mesa calculado:</b> cerca de <b>"+hh(need)+" h</b> para "+n+" aquarelas (cada peça leva em média "+P.minPorAquarela+" min, já incluindo pequenas pausas).";
 
@@ -260,6 +261,22 @@ function calc(){
   $("tab").innerHTML=rows.map(r=>"<tr><td>"+r[0]+"</td><td>"+brl(r[1])+"</td></tr>").join("");
   $("trab").textContent="Cada aquarela leva em média "+P.minPorAquarela+" minutos. O cálculo de horas já considera o ritmo real de trabalho durante a festa.";
 }
+
+// Lógica de clique nas faixas
+document.querySelectorAll(".tier-seg").forEach(seg => {
+  seg.addEventListener("click", () => {
+    const index = parseInt(seg.getAttribute("data-index"));
+    // Define o valor mínimo da faixa: se for a primeira, é 1. Senão, é o teto da faixa anterior + 1.
+    const minVal = index === 0 ? 1 : P.faixas[index - 1].ate + 1;
+    
+    const slider = $("aq");
+    slider.value = minVal;
+    
+    // Dispara o evento 'input' para acionar o calc() naturalmente
+    slider.dispatchEvent(new Event("input"));
+  });
+});
+
 document.querySelectorAll("#p1 input,#p1 select").forEach(e=>e.addEventListener("input",calc));
 calc();
 
