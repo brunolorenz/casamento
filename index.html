@@ -72,9 +72,12 @@ td:last-child{text-align:right;white-space:nowrap}
 <legend>1. A festa</legend>
 <label for="conv">Número de convidados</label>
 <input id="conv" type="number" min="10" max="600" value="100">
-<label for="pct">Participação: <b id="pctv"></b> dos convidados</label>
-<input id="pct" type="range" min="10" max="100" step="5" value="60">
-<p class="hint">Nem todos passam pela mesa. O slider vai de 10% a 100%; na prática, 40% a 70% é o mais comum. Cada aquarela retrata um casal ou uma família pequena (média de 2,5 pessoas por aquarela). Estimativa: <b id="qtd"></b> aquarelas; cabem <b id="cabem"></b> no tempo escolhido.</p>
+<p class="hint">Cada aquarela retrata um casal ou uma família pequena (média de 2,5 pessoas por aquarela).</p>
+
+<label for="aq">Número de aquarelas que você quer</label>
+<input id="aq" type="number" min="1" max="45" value="24">
+<p class="hint" id="sug"></p>
+
 <label for="dia">Dia da festa</label>
 <select id="dia"></select>
 <label for="loc">Local</label>
@@ -82,9 +85,7 @@ td:last-child{text-align:right;white-space:nowrap}
 </fieldset>
 
 <fieldset>
-<legend>2. Tempo de mesa</legend>
-<label for="hrs">Limite de horas: <b id="hrsv"></b></label>
-<input id="hrs" type="range" min="2" max="6" step="0.5" value="3">
+<legend>2. Tempo de mesa (calculado)</legend>
 <p class="hint" id="cap"></p>
 </fieldset>
 
@@ -105,19 +106,21 @@ td:last-child{text-align:right;white-space:nowrap}
 <p class="note">Valores de referência para iniciarmos a conversa. A proposta final pode mudar conforme local, data, detalhes do evento e uso das imagens.</p>
 </section>
 
-<!-- TODO: troque o número do WhatsApp e a mensagem abaixo pelos seus -->
 <section class="cta">
 <h2>Quer reservar uma data?</h2>
 <p>Me chama no WhatsApp com a data e o número de convidados. Respondo em até um dia útil.</p>
 <div class="cta-btns">
-<a class="btn" href="https://wa.me/5551999999999?text=Oi%20Bruno!%20Quero%20um%20or%C3%A7amento%20de%20aquarelas%20para%20meu%20casamento.%20Data%3A%20____%20Convidados%3A%20____" target="_blank" rel="noopener">Falar no WhatsApp</a>
+<a class="btn" href="https://wa.me/5551997769447?text=Oi%20Bruno!%20Quero%20um%20or%C3%A7amento%20de%20aquarelas%20para%20meu%20casamento.%20Data%3A%20____%20Convidados%3A%20____" target="_blank" rel="noopener">Falar no WhatsApp</a>
 <a class="btn ghost" href="https://instagram.com/unspredinhos" target="_blank" rel="noopener">@unspredinhos</a>
+<a class="btn ghost" href="https://www.google.com/maps/place/Uns+Predinhos/@-30.0199762,-51.2094818,17z/data=!4m8!3m7!1s0x951979ee17912a89:0x14ad1f46fd426a16!8m2!3d-30.0199762!4d-51.2094818!9m1!1b1!16s%2Fg%2F11x1p87vbf?entry=ttu" target="_blank" rel="noopener">Avaliações no Google · 5,0 ★ (78)</a>
 </div>
-<!-- SUBSTITUA pelos depoimentos reais -->
 <div class="prova">
-<blockquote>“Os convidados adoraram. Virou a lembrança mais disputada da festa.”<cite>— Marina &amp; Rafa, casamento em Porto Alegre</cite></blockquote>
-<blockquote>“A aquarela ficou linda e o processo foi super tranquilo.”<cite>— Carla &amp; Beto, Novo Hamburgo</cite></blockquote>
+<blockquote>“O trabalho do Bruno é impecável! Já tive experiência com duas artes que ele efetuou, e é indescritível a sensação que ele nos causa através dos desenhos. Fico emocionada com a riqueza de detalhes e com o sentimento de acalento que as aquarelas transmitem.”<cite>— Avaliação no Google</cite></blockquote>
+<blockquote>“AMEI o trabalho do Bruno! Desde o primeiro atendimento ele foi super atencioso. Durante o processo conversamos bastante sobre o que era importante pra mim nas pinturas e ele conseguiu retratar exatamente aquilo que eu esperava.”<cite>— Avaliação no Google</cite></blockquote>
+<blockquote>“Encomendar uma arte com o Bruno foi uma experiência maravilhosa. Além do talento incrível, o que mais me marcou foi o cuidado e a sensibilidade com que ele ouviu a história por trás da minha encomenda.”<cite>— Avaliação no Google</cite></blockquote>
+<blockquote>“Bruno é muito solícito e talentoso :) Amei a arte do meu predinho preferido! Super recomendo!”<cite>— Avaliação no Google</cite></blockquote>
 </div>
+<p class="note" style="margin-top:12px">Trechos de avaliações públicas na página do Uns Predinhos no Google Maps. Nota 5,0 ★ com 78 avaliações.</p>
 </section>
 </section>
 
@@ -139,11 +142,11 @@ td:last-child{text-align:right;white-space:nowrap}
 const FOTOS = { artista: "", exemplos: ["", "", ""] };
 // ====== VALORES EDITÁVEIS (Bruno ajusta aqui) ======
 const P = {
-  faixas: [ // preço por aquarela (de um casal/família) conforme quantidade
+  faixas: [
     {ate:30, v:80},{ate:9999, v:70}
   ],
-  minPorAquarela: 9,          // minutos para pintar cada uma (média)
-  pessoasPorAquarela: 2.5,    // média de pessoas por aquarela (casal ou família pequena)
+  minPorAquarela: 9,
+  pessoasPorAquarela: 2.5,
   mesaFixa: 450, horasInclusas: 2, horaExtra: 130,
   dias: [{n:"Dia de semana", m:0},{n:"Sábado ou domingo", m:0.15},{n:"Feriado ou alta temporada", m:0.25}],
   locais: [
@@ -164,17 +167,26 @@ $("envp").textContent="+ "+brl(P.envelope)+" por aquarela";
 $("molp").textContent="+ "+brl(P.moldura)+" por aquarela";
 $("noip").textContent="+ "+brl(P.noivos);
 $("ajp").textContent="+ "+brl(P.ajudante);
+
+// Sugestão inicial e ao mudar convidados
+function sugerirAquarelas(){
+  const conv=+$("conv").value||0;
+  const sug=Math.max(1,Math.round(conv/P.pessoasPorAquarela));
+  $("sug").textContent="Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas. Você pode ajustar o número acima.";
+}
+$("conv").addEventListener("input",sugerirAquarelas);
+sugerirAquarelas();
+
 function calc(){
-  const conv=+$("conv").value||0, pct=+$("pct").value, hrs=+$("hrs").value;
-  const est=Math.max(1,Math.round(conv*pct/100/P.pessoasPorAquarela));
-  const capN=Math.max(1,Math.floor(hrs*60/P.minPorAquarela));
-  const n=Math.min(est,capN);
-  $("pctv").textContent=pct+"%"; $("hrsv").textContent=hh(hrs)+" h";
-  $("qtd").textContent=est; $("cabem").textContent=capN;
+  const conv=+$("conv").value||0;
+  const n=Math.max(1,Math.min(45,+$("aq").value||1)); // teto de 45 por noite
   const need=Math.max(P.horasInclusas,Math.ceil(n*P.minPorAquarela/60*2)/2);
-  $("cap").textContent= est>capN
-    ? "Com "+hh(hrs)+" h cabem cerca de "+capN+" aquarelas. Para atender as "+est+" estimadas seriam necessárias "+hh(Math.ceil(est*P.minPorAquarela/60*2)/2)+" h. Você pode aumentar as horas ou reduzir a participação."
-    : "Com "+hh(hrs)+" h cabem cerca de "+capN+" aquarelas, o suficiente para as "+est+" estimadas.";
+  const capN=Math.floor(6*60/P.minPorAquarela); // capacidade máxima em 6h, para aviso
+
+  $("cap").textContent = n>capN
+    ? "Atenção: "+n+" aquarelas exigem "+hh(Math.ceil(n*P.minPorAquarela/60*2)/2)+" h de mesa, acima do limite usual de 6 h. Considere reduzir o número ou conversar sobre um segundo artista."
+    : "Para "+n+" aquarelas, o tempo de mesa necessário é de "+hh(need)+" h (cada peça leva em média "+P.minPorAquarela+" min).";
+
   const loc=P.locais[$("loc").value], dm=P.dias[$("dia").value].m;
   const base=P.faixas.find(f=>n<=f.ate).v;
   const rows=[[n+" aquarelas × "+brl(base),base*n]];
@@ -189,13 +201,15 @@ function calc(){
   $("tot").textContent=brl(tot);
   $("por").textContent="Cerca de "+brl(tot/Math.max(1,conv))+" por convidado da festa, ou "+brl(tot/n)+" por aquarela ("+n+" aquarelas).";
   $("tab").innerHTML=rows.map(r=>"<tr><td>"+r[0]+"</td><td>"+brl(r[1])+"</td></tr>").join("");
-  $("trab").textContent="Cada aquarela leva em média "+P.minPorAquarela+" minutos, por isso o tempo de mesa define quantos casais podem ser atendidos.";
+  $("trab").textContent="Cada aquarela leva em média "+P.minPorAquarela+" minutos, por isso o número de aquarelas define o tempo de mesa.";
 }
 document.querySelectorAll("#p1 input,#p1 select").forEach(e=>e.addEventListener("input",calc));
 calc();
+
 // fotos
 $("foto").innerHTML = FOTOS.artista ? '<img class="foto" alt="Bruno Lorenz" src="'+FOTOS.artista+'">' : '<div class="foto ph">Foto do artista</div>';
 $("exs").innerHTML = FOTOS.exemplos.map((s,i)=> s ? '<img class="ex" alt="Exemplo de aquarela '+(i+1)+'" src="'+s+'">' : '<div class="ex ph">Exemplo '+(i+1)+'</div>').join("");
+
 // abas
 [["t1","p1"],["t2","p2"]].forEach(([t,p])=>$(t).addEventListener("click",()=>{
   [["t1","p1"],["t2","p2"]].forEach(([a,b])=>{$(a).setAttribute("aria-selected",a===t);$(b).hidden=(b!==p)});
