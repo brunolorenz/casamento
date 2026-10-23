@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aquarelas no seu casamento · Uns Predinhos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#F2F5F8;--card:#FFFFFF;--ink:#1B2A41;--mute:#5B6B82;--line:#D3DDE8;--cobalt:#2F5D9E;--wash:#DCE8F4;--blush:#E9B8AA;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10192A;--card:#18243A;--ink:#E8EEF6;--mute:#9AABC2;--line:#2B3A55;--cobalt:#7FA8E0;--wash:#22314D;--blush:#E9B8AA}}
+:root[data-theme="dark"]{--bg:#10192A;--card:#18243A;--ink:#E8EEF6;--mute:#9AABC2;--line:#2B3A55;--cobalt:#7FA8E0;--wash:#22314D;--blush:#E9B8AA}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 "Instrument Sans",system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:28px 18px 60px}
+h1{font:400 2rem/1.15 "Young Serif",Georgia,serif;margin:0 0 10px}
+h2{font:400 1.4rem/1.2 "Young Serif",Georgia,serif;margin:0 0 8px}
+.lead{color:var(--mute);margin:0 0 20px;max-width:56ch}
+.tabs{display:flex;gap:6px;margin:0 0 20px;border-bottom:1px solid var(--line)}
+.tabs button{font:inherit;font-weight:500;color:var(--mute);background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;cursor:pointer}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--cobalt)}
+fieldset{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:16px 18px;margin:0 0 14px}
+legend{font-weight:600;padding:0 6px}
+label{display:block;margin:12px 0 4px;font-weight:500}
+.hint{color:var(--mute);font-size:.88rem;margin:2px 0 0}
+input[type=number],select{width:100%;padding:10px 12px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px}
+input[type=range]{width:100%;accent-color:var(--cobalt)}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:10px 0;font-weight:400}
+.chk input{margin-top:5px;accent-color:var(--cobalt)}
+.chk small{display:block;color:var(--mute)}
+:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+.total{background:var(--wash);border:1px solid var(--line);border-left:6px solid var(--blush);border-radius:14px;padding:18px;margin-top:20px}
+.big{font:400 2.3rem/1.1 "Young Serif",Georgia,serif;margin:4px 0}
+.sub{color:var(--mute);margin:0}
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:.95rem}
+td{padding:6px 0;border-bottom:1px solid var(--line)}
+td:last-child{text-align:right;white-space:nowrap}
+.note{font-size:.85rem;color:var(--mute);margin-top:14px}
+.about p{max-width:60ch}
+.foto{width:160px;height:160px;border-radius:50%;object-fit:cover;float:right;margin:0 0 10px 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.ex{aspect-ratio:3/2;width:100%;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.ph{display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mute);font-size:.85rem;border:1px dashed var(--line);background:var(--wash);padding:8px}
+.foto.ph{float:right}
+.aviso{border-left:6px solid var(--blush);background:var(--wash);border-radius:10px;padding:12px 16px;margin:16px 0}
+[hidden]{display:none}
+</style>
+</head>
+<body>
+<main>
+<h1>Aquarelas de recordação no seu casamento</h1>
+<p class="lead">Durante a festa, fico numa mesa pintando pequenas aquarelas dos convidados na hora, e cada casal leva a sua de lembrança.</p>
+<div class="tabs" role="tablist">
+<button role="tab" id="t1" aria-selected="true" aria-controls="p1">Orçamento</button>
+<button role="tab" id="t2" aria-selected="false" aria-controls="p2">Sobre o artista</button>
+</div>
+
+<section id="p1" role="tabpanel" aria-labelledby="t1">
+<fieldset>
+<legend>1. A festa</legend>
+<label for="conv">Número de convidados</label>
+<input id="conv" type="number" min="10" max="600" value="100">
+<label for="pct">Participação: <b id="pctv"></b> dos convidados</label>
+<input id="pct" type="range" min="10" max="100" step="5" value="60">
+<p class="hint">Nem todos passam pela mesa. Em geral, de 40% a 70%. Cada aquarela retrata um casal, e famílias maiores entram na mesma aquarela. Estimativa: <b id="qtd"></b> aquarelas.</p>
+<label for="dia">Dia da festa</label>
+<select id="dia"></select>
+<label for="loc">Local</label>
+<select id="loc"></select>
+</fieldset>
+
+<fieldset>
+<legend>2. Tempo de mesa</legend>
+<label for="hrs">Limite de horas: <b id="hrsv"></b></label>
+<input id="hrs" type="range" min="2" max="6" step="0.5" value="3">
+<p class="hint" id="cap"></p>
+</fieldset>
+
+<fieldset>
+<legend>3. Acabamento e extras</legend>
+<label class="chk"><input type="checkbox" id="env"><span>Envelope e cartão com dedicatória<small id="envp"></small></span></label>
+<label class="chk"><input type="checkbox" id="mol"><span>Moldura pequena com passe-partout<small id="molp"></small></span></label>
+<label class="chk"><input type="checkbox" id="noi"><span>Pintura ao vivo dos noivos, em tamanho maior (A5)<small id="noip"></small></span></label>
+<label class="chk"><input type="checkbox" id="aj"><span>Ajudante para organizar a fila e secar as aquarelas<small id="ajp"></small></span></label>
+</fieldset>
+
+<section class="total" aria-live="polite">
+<p class="sub">Investimento estimado</p>
+<p class="big" id="tot"></p>
+<p class="sub" id="por"></p>
+<table id="tab"></table>
+<p class="note" id="trab"></p>
+<p class="note">Valores de referência para iniciarmos a conversa. A proposta final pode mudar conforme local, data, detalhes do evento e uso das imagens.</p>
+</section>
+</section>
+
+<section id="p2" role="tabpanel" aria-labelledby="t2" class="about" hidden>
+<div id="foto"></div>
+<h2>Bruno Lorenz</h2>
+<p>Sou artista visual, designer e educador em Porto Alegre. Pinto aquarelas de arquitetura urbana, principalmente pequenos prédios residenciais e históricos, sob o nome Uns Predinhos (@unspredinhos). Também faço oficinas de desenho para todas as idades.</p>
+<div class="aviso">
+<b>O que esperar das aquarelas</b>
+<p>Como são pintadas na hora, enquanto a festa acontece, elas são simplificadas e mais focadas na silhueta e no clima do casal. Não são retratos detalhados, e os rostos não têm detalhamento. A graça está no registro espontâneo do momento.</p>
+</div>
+<p>Alguns exemplos do estilo:</p>
+<div class="grid" id="exs"></div>
+</section>
+</main>
+
+<script>
+// ====== FOTOS: cole aqui imagens em data URI (ou peça ao Claude para embutir) ======
+const FOTOS = { artista: "", exemplos: ["", "", ""] };
+// ====== VALORES EDITÁVEIS (Bruno ajusta aqui) ======
+const P = {
+  faixas: [ // preço por aquarela (de um casal) conforme quantidade
+    {ate:30, v:80},{ate:60, v:70},{ate:9999, v:60}
+  ],
+  minPorAquarela: 15,          // minutos para pintar cada uma (média)
+  mesaFixa: 450, horasInclusas: 2, horaExtra: 130,
+  dias: [{n:"Dia de semana", m:0},{n:"Sábado ou domingo", m:0.1},{n:"Feriado ou alta temporada", m:0.25}],
+  locais: [
+    {n:"Porto Alegre", v:0},
+    {n:"Região metropolitana", v:200},
+    {n:"Interior do RS, até 150 km", v:600},
+    {n:"Outra cidade (hospedagem e viagem à parte)", v:1200}
+  ],
+  envelope: 8, moldura: 70, noivos: 420, ajudante: 350
+};
+// ====================================================
+const $ = id => document.getElementById(id);
+const brl = n => n.toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
+const hh = h => h.toString().replace(".",",");
+P.dias.forEach((t,i)=>$("dia").add(new Option(t.n+(t.m?" (+"+Math.round(t.m*100)+"%)":""),i)));
+P.locais.forEach((t,i)=>$("loc").add(new Option(t.n+(t.v?" (+"+brl(t.v)+")":""),i)));
+$("envp").textContent="+ "+brl(P.envelope)+" por aquarela";
+$("molp").textContent="+ "+brl(P.moldura)+" por aquarela";
+$("noip").textContent="+ "+brl(P.noivos);
+$("ajp").textContent="+ "+brl(P.ajudante);
+function calc(){
+  const conv=+$("conv").value||0, pct=+$("pct").value, hrs=+$("hrs").value;
+  const est=Math.max(1,Math.round(conv*pct/100/2));
+  const capN=Math.max(1,Math.floor(hrs*60/P.minPorAquarela));
+  const n=Math.min(est,capN);
+  $("pctv").textContent=pct+"%"; $("hrsv").textContent=hh(hrs)+" h"; $("qtd").textContent=est;
+  const need=Math.max(P.horasInclusas,Math.ceil(n*P.minPorAquarela/60*2)/2);
+  $("cap").textContent= est>capN
+    ? "Com "+hh(hrs)+" h cabem cerca de "+capN+" aquarelas. Para atender as "+est+" estimadas seriam necessárias "+hh(Math.ceil(est*P.minPorAquarela/60*2)/2)+" h."
+    : "Com "+hh(hrs)+" h cabem cerca de "+capN+" aquarelas, o suficiente para as "+est+" estimadas.";
+  const loc=P.locais[$("loc").value], dm=P.dias[$("dia").value].m;
+  const base=P.faixas.find(f=>n<=f.ate).v;
+  const rows=[[n+" aquarelas × "+brl(base),base*n]];
+  rows.push(["Presença e mesa ("+hh(need)+" h)",P.mesaFixa+Math.max(0,need-P.horasInclusas)*P.horaExtra]);
+  if(dm) rows.push(["Acréscimo de data ("+Math.round(dm*100)+"%)",(rows[0][1]+rows[1][1])*dm]);
+  if(loc.v) rows.push(["Deslocamento",loc.v]);
+  if($("env").checked) rows.push(["Envelope e cartão",P.envelope*n]);
+  if($("mol").checked) rows.push(["Molduras pequenas",P.moldura*n]);
+  if($("noi").checked) rows.push(["Pintura ao vivo dos noivos (A5)",P.noivos]);
+  if($("aj").checked) rows.push(["Ajudante",P.ajudante]);
+  const tot=rows.reduce((s,r)=>s+r[1],0);
+  $("tot").textContent=brl(tot);
+  $("por").textContent="Cerca de "+brl(tot/Math.max(1,conv))+" por convidado da festa, ou "+brl(tot/n)+" por aquarela.";
+  $("tab").innerHTML=rows.map(r=>"<tr><td>"+r[0]+"</td><td>"+brl(r[1])+"</td></tr>").join("");
+  $("trab").textContent="Cada aquarela leva em média "+P.minPorAquarela+" minutos, por isso o tempo de mesa define quantos casais podem ser atendidos.";
+}
+document.querySelectorAll("#p1 input,#p1 select").forEach(e=>e.addEventListener("input",calc));
+calc();
+// fotos
+$("foto").innerHTML = FOTOS.artista ? '<img class="foto" alt="Bruno Lorenz" src="'+FOTOS.artista+'">' : '<div class="foto ph">Foto do artista</div>';
+$("exs").innerHTML = FOTOS.exemplos.map((s,i)=> s ? '<img class="ex" alt="Exemplo de aquarela '+(i+1)+'" src="'+s+'">' : '<div class="ex ph">Exemplo '+(i+1)+'</div>').join("");
+// abas
+[["t1","p1"],["t2","p2"]].forEach(([t,p])=>$(t).addEventListener("click",()=>{
+  [["t1","p1"],["t2","p2"]].forEach(([a,b])=>{$(a).setAttribute("aria-selected",a===t);$(b).hidden=(b!==p)});
+}));
+</script>
+</body>
+</html>
