@@ -25,7 +25,24 @@ legend{font-weight:600;padding:0 6px}
 label{display:block;margin:12px 0 4px;font-weight:500}
 .hint{color:var(--mute);font-size:.88rem;margin:2px 0 0}
 input[type=number],select{width:100%;padding:10px 12px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px}
-input[type=range]{width:100%;accent-color:var(--cobalt)}
+
+/* Custom Range Slider */
+.slider-container{margin-top:8px}
+.slider-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
+.slider-value{font:600 1.8rem/1 "Instrument Sans",sans-serif;color:var(--cobalt)}
+input[type=range]{-webkit-appearance:none;width:100%;background:transparent;margin:10px 0;cursor:pointer}
+input[type=range]:focus{outline:none}
+input[type=range]::-webkit-slider-runnable-track{width:100%;height:8px;background:var(--line);border-radius:4px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:24px;width:24px;border-radius:50%;background:var(--cobalt);margin-top:-8px;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:transform .1s}
+input[type=range]::-webkit-slider-thumb:active{transform:scale(1.1)}
+
+/* Barra de Faixas (Termômetro) */
+.tier-bar{display:flex;margin-top:16px;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--bg)}
+.tier-seg{flex:1;text-align:center;padding:10px 4px;font-size:.85rem;color:var(--mute);border-right:1px solid var(--line);transition:all .3s ease}
+.tier-seg:last-child{border-right:none}
+.tier-seg.active{background:var(--cobalt);color:#fff;font-weight:600;font-size:.95rem;transform:scale(1.02);box-shadow:0 2px 8px rgba(0,0,0,.15);z-index:1}
+.tier-hint{font-size:.88rem;color:var(--mute);margin:8px 0 0;font-style:italic;text-align:center}
+
 .chk{display:flex;gap:10px;align-items:flex-start;margin:10px 0;font-weight:400}
 .chk input{margin-top:5px;accent-color:var(--cobalt)}
 .chk small{display:block;color:var(--mute)}
@@ -39,7 +56,6 @@ td:last-child{text-align:right;white-space:nowrap}
 .note{font-size:.85rem;color:var(--mute);margin-top:14px}
 .about p{max-width:60ch}
 .foto{width:160px;height:160px;border-radius:50%;object-fit:cover;float:right;margin:0 0 10px 16px}
-/* Galeria de exemplos - imagens grandes e clicáveis */
 .grid{display:grid;grid-template-columns:1fr;gap:16px;margin:20px 0}
 @media (min-width:480px){.grid{grid-template-columns:repeat(2,1fr)}}
 .ex-link{display:block;border-radius:10px;overflow:hidden;border:1px solid var(--line);transition:transform .2s, box-shadow .2s;background:var(--card)}
@@ -48,17 +64,8 @@ td:last-child{text-align:right;white-space:nowrap}
 .ph{display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mute);font-size:.9rem;border:1px dashed var(--line);background:var(--wash);padding:20px;border-radius:10px;aspect-ratio:4/3}
 .foto.ph{float:right;aspect-ratio:1/1;border-radius:50%;padding:10px;width:160px;height:160px}
 .aviso{border-left:6px solid var(--blush);background:var(--wash);border-radius:10px;padding:12px 16px;margin:16px 0}
-/* Tempo de mesa calculado, com destaque */
 .tempo{margin-top:16px;padding:12px 14px;background:var(--wash);border:1px solid var(--line);border-left:4px solid var(--cobalt);border-radius:10px;font-size:.95rem}
 .tempo b{font-weight:600}
-/* Faixas de preço dinâmicas */
-.faixas-ui{display:flex;gap:8px;margin-top:12px}
-.faixa-item{flex:1;text-align:center;padding:10px 6px;border:1px solid var(--line);border-radius:8px;background:var(--bg);transition:all .2s;cursor:default}
-.faixa-item.active{border-color:var(--cobalt);background:var(--wash);box-shadow:0 0 0 1px var(--cobalt);transform:translateY(-2px)}
-.faixa-qtd{display:block;font-size:.8rem;color:var(--mute);margin-bottom:2px}
-.faixa-item.active .faixa-qtd{color:var(--cobalt);font-weight:600}
-.faixa-preco{display:block;font-weight:600;font-size:1.05rem}
-/* CTA e prova social */
 .cta{margin-top:24px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
 .cta h2{margin:0 0 6px}
 .cta p{margin:0 0 14px;color:var(--mute)}
@@ -88,10 +95,20 @@ td:last-child{text-align:right;white-space:nowrap}
 <input id="conv" type="number" min="10" max="600" value="100">
 <p class="hint">Cada aquarela retrata um casal ou uma família pequena (média de 2,5 pessoas por aquarela).</p>
 
-<label for="aq">Número aproximado de aquarelas (10×15 cm)</label>
-<input id="aq" type="number" min="1" max="30" value="24">
-<p class="hint" id="sug"></p>
-<div class="faixas-ui" id="faixasUI"></div>
+<label>Número aproximado de aquarelas (10×15 cm)</label>
+<div class="slider-container">
+  <div class="slider-header">
+    <span class="slider-value" id="aqDisplay">17</span>
+    <span class="hint" id="sug"></span>
+  </div>
+  <input id="aq" type="range" min="1" max="30" step="1" value="17">
+  <div class="tier-bar" id="tierBar">
+    <div class="tier-seg" data-index="0">1 a 15</div>
+    <div class="tier-seg" data-index="1">16 a 25</div>
+    <div class="tier-seg" data-index="2">26 a 30</div>
+  </div>
+  <p class="tier-hint" id="tierHint"></p>
+</div>
 
 <div class="tempo" id="capBox">
   <span id="cap"></span>
@@ -166,12 +183,12 @@ const FOTOS = {
 };
 // ====== VALORES EDITÁVEIS (Bruno ajusta aqui) ======
 const P = {
-  faixas: [ // preço por aquarela conforme quantidade
+  faixas: [
     {ate:15, v:120},
     {ate:25, v:110},
     {ate:30, v:100}
   ],
-  minPorAquarela: 12,          // minutos por aquarela (inclui transição/pausas curtas)
+  minPorAquarela: 12,
   pessoasPorAquarela: 2.5,
   mesaFixa: 450, horasInclusas: 2, horaExtra: 130,
   dias: [{n:"Dia de semana", m:0},{n:"Sábado ou domingo", m:0.15},{n:"Feriado ou alta temporada", m:0.25}],
@@ -193,30 +210,34 @@ $("envp").textContent="+ "+brl(P.envelope)+" por aquarela";
 $("molp").textContent="+ "+brl(P.moldura)+" por aquarela";
 $("noip").textContent="+ "+brl(P.noivos);
 
-// Renderizar as faixas na tela
-$("faixasUI").innerHTML = P.faixas.map((f, i) => {
-  const prev = i === 0 ? 1 : P.faixas[i-1].ate + 1;
-  return `<div class="faixa-item" data-index="${i}">
-    <span class="faixa-qtd">${prev} a ${f.ate} un.</span>
-    <span class="faixa-preco">${brl(f.v)}</span>
-  </div>`;
-}).join("");
-
 function calc(){
   const conv=+$("conv").value||0;
-  const n=Math.max(1,Math.min(30,+$("aq").value||1)); // teto de 30
+  const n=+$("aq").value;
   const need=Math.max(P.horasInclusas,Math.ceil(n*P.minPorAquarela/60*2)/2);
   
+  $("aqDisplay").textContent = n;
+
   const faixaIndex = P.faixas.findIndex(f => n <= f.ate);
   const base=P.faixas[faixaIndex].v;
 
-  // Destacar a faixa atual
-  document.querySelectorAll(".faixa-item").forEach((el, i) => {
+  // Atualiza as faixas visuais
+  document.querySelectorAll(".tier-seg").forEach((el, i) => {
     el.classList.toggle("active", i === faixaIndex);
   });
 
+  // Mensagem de incentivo para a próxima faixa
+  if (faixaIndex === 0) {
+    $("tierHint").textContent = "Faltam " + (16 - n) + " para cair para " + brl(P.faixas[1].v) + ".";
+  } else if (faixaIndex === 1) {
+    $("tierHint").textContent = "Faltam " + (26 - n) + " para cair para " + brl(P.faixas[2].v) + ".";
+  } else {
+    $("tierHint").textContent = "Você já está no melhor preço por volume!";
+  }
+
   const sug=Math.max(1,Math.round(conv/P.pessoasPorAquarela));
-  $("sug").textContent="Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas.";
+  // Se a sugestão for maior que o teto de 30, avisa.
+  const sugText = sug > 30 ? "Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas (máximo 30 no orçamento online)." : "Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas.";
+  $("sug").textContent=sugText;
 
   $("cap").innerHTML = "<b>Tempo de mesa calculado:</b> cerca de <b>"+hh(need)+" h</b> para "+n+" aquarelas (cada peça leva em média "+P.minPorAquarela+" min, já incluindo pequenas pausas).";
 
