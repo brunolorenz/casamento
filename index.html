@@ -13,7 +13,6 @@
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:16px/1.5 "Instrument Sans",system-ui,sans-serif;
 padding-top:env(safe-area-inset-top,0px);
-/* Espaço extra no final para a barra flutuante não cobrir o conteúdo */
 padding-bottom:calc(140px + env(safe-area-inset-bottom,0px));}
 main{max-width:720px;margin:0 auto;padding:28px 18px 60px}
 h1{font:400 2rem/1.15 "Young Serif",Georgia,serif;margin:0 0 10px}
@@ -30,7 +29,7 @@ input[type=number],select{width:100%;padding:10px 12px;font:inherit;color:var(--
 
 /* Custom Range Slider */
 .slider-container{margin-top:8px}
-.slider-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
+.slider-header{margin-bottom:2px}
 .slider-value{font:600 1.8rem/1 "Instrument Sans",sans-serif;color:var(--cobalt)}
 input[type=range]{-webkit-appearance:none;width:100%;background:transparent;margin:10px 0;cursor:pointer}
 input[type=range]:focus{outline:none}
@@ -104,7 +103,7 @@ td:last-child{text-align:right;white-space:nowrap}
 @media (min-width:600px){
   .sticky-content{flex-direction:row; align-items:center; justify-content:space-between;}
   .sticky-footer .btn{width:auto; min-width:240px;}
-  .sticky-micro{display:none;} /* Esconde a microcopy em telas grandes para economizar espaço */
+  .sticky-micro{display:none;}
 }
 [hidden]{display:none}
 </style>
@@ -129,7 +128,6 @@ td:last-child{text-align:right;white-space:nowrap}
 <div class="slider-container">
   <div class="slider-header">
     <span class="slider-value" id="aqDisplay">17</span>
-    <span class="hint" id="sug"></span>
   </div>
   <input id="aq" type="range" min="1" max="30" step="1" value="17">
   
@@ -175,7 +173,6 @@ td:last-child{text-align:right;white-space:nowrap}
 <h2>Quer reservar uma data?</h2>
 <p>Me chama no WhatsApp com a data e o número de convidados. Respondo em até um dia útil.</p>
 <div class="cta-btns">
-<!-- O link aqui também é atualizado dinamicamente via JS -->
 <a class="btn" id="ctaWhatsapp" href="#" target="_blank" rel="noopener">Falar no WhatsApp</a>
 <a class="btn ghost" href="https://instagram.com/unspredinhos" target="_blank" rel="noopener">@unspredinhos</a>
 <a class="btn ghost" href="https://www.google.com/maps/place/Uns+Predinhos/@-30.0199762,-51.2094818,17z/data=!4m8!3m7!1s0x951979ee17912a89:0x14ad1f46fd426a16!8m2!3d-30.0199762!4d-51.2094818!9m1!1b1!16s%2Fg%2F11x1p87vbf?entry=ttu" target="_blank" rel="noopener">Avaliações no Google · 5,0 ★ (78)</a>
@@ -203,7 +200,6 @@ td:last-child{text-align:right;white-space:nowrap}
 </section>
 </main>
 
-<!-- BARRA FLUTUANTE -->
 <div class="sticky-footer" id="stickyFooter" hidden>
   <div class="sticky-content">
     <div class="sticky-top">
@@ -225,7 +221,6 @@ td:last-child{text-align:right;white-space:nowrap}
 </div>
 
 <script>
-// ====== FOTOS: caminhos relativos ao repositório ======
 const FOTOS = {
   artista: "img/perfil.jpeg",
   exemplos: [
@@ -234,7 +229,7 @@ const FOTOS = {
     ""
   ]
 };
-// ====== VALORES EDITÁVEIS (Bruno ajusta aqui) ======
+
 const P = {
   faixas: [
     {ate:15, v:120},
@@ -253,10 +248,11 @@ const P = {
   ],
   envelope: 8, moldura: 70, noivos: 600, ajudanteHora: 100
 };
-// ====================================================
+
 const $ = id => document.getElementById(id);
 const brl = n => n.toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
 const hh = h => h.toString().replace(".",",");
+
 P.dias.forEach((t,i)=>$("dia").add(new Option(t.n+(t.m?" (+"+Math.round(t.m*100)+"%)":""),i)));
 P.locais.forEach((t,i)=>$("loc").add(new Option(t.n+(t.v?" (+"+brl(t.v)+")":""),i)));
 $("envp").textContent="+ "+brl(P.envelope)+" por aquarela";
@@ -285,9 +281,6 @@ function calc(){
     $("tierHint").textContent = "Você já está no melhor preço por volume!";
   }
 
-  const sug=Math.max(1,Math.round(conv/P.pessoasPorAquarela));
-  $("sug").textContent="Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas.";
-
   $("cap").innerHTML = "<b>Tempo de mesa calculado:</b> cerca de <b>"+hh(need)+" h</b> para "+n+" aquarelas (cada peça leva em média "+P.minPorAquarela+" min, já incluindo pequenas pausas).";
 
   const loc=P.locais[$("loc").value], dm=P.dias[$("dia").value].m;
@@ -309,7 +302,6 @@ function calc(){
   $("tab").innerHTML=rows.map(r=>"<tr><td>"+r[0]+"</td><td>"+brl(r[1])+"</td></tr>").join("");
   $("trab").textContent="Cada aquarela leva em média "+P.minPorAquarela+" minutos. O cálculo de horas já considera o ritmo real de trabalho durante a festa.";
 
-  // ATUALIZA A BARRA FLUTUANTE
   $("stickyTot").textContent = brl(tot);
   $("stickySub").textContent = n + " aquarelas · " + hh(need) + "h de mesa";
   
@@ -319,13 +311,11 @@ function calc(){
   $("ctaWhatsapp").href = waLink;
   $("stickyBtn").href = waLink;
 
-  // Mostra a barra apenas se a aba de orçamento estiver visível
   if(!$("p1").hidden) {
     $("stickyFooter").hidden = false;
   }
 }
 
-// Lógica de clique nas faixas
 document.querySelectorAll(".tier-seg").forEach(seg => {
   seg.addEventListener("click", () => {
     const index = parseInt(seg.getAttribute("data-index"));
@@ -339,7 +329,6 @@ document.querySelectorAll(".tier-seg").forEach(seg => {
 document.querySelectorAll("#p1 input,#p1 select").forEach(e=>e.addEventListener("input",calc));
 calc();
 
-// fotos e links
 $("foto").innerHTML = FOTOS.artista
   ? '<img class="foto" alt="Bruno Lorenz" src="'+FOTOS.artista+'">'
   : '<div class="foto ph">Foto do artista</div>';
@@ -349,10 +338,8 @@ $("exs").innerHTML = FOTOS.exemplos.map((s,i)=> s
   : '<div class="ex ph">Exemplo '+(i+1)+'</div>'
 ).join("");
 
-// abas
 [["t1","p1"],["t2","p2"]].forEach(([t,p])=>$(t).addEventListener("click",()=>{
   [["t1","p1"],["t2","p2"]].forEach(([a,b])=>{$(a).setAttribute("aria-selected",a===t);$(b).hidden=(b!==p)});
-  // Mostra/esconde a barra flutuante dependendo da aba ativa
   $("stickyFooter").hidden = (t !== "t1");
 }));
 </script>
