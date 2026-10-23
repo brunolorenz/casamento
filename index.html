@@ -6,13 +6,13 @@
 <title>Aquarelas no seu casamento · Uns Predinhos</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;500;600&display=swap">
 <style>
-:root{--bg:#F2F5F8;--card:#FFFFFF;--ink:#1B2A41;--mute:#5B6B82;--line:#D3DDE8;--cobalt:#2F5D9E;--wash:#DCE8F4;--blush:#E9B8AA;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#F2F5F8;--card:#FFFFFF;--ink:#1B2A41;--mute:#5B6B82;--line:#D3DDE8;--cobalt:#2F5D9E;--wash:#DCE8F4;--blush:#E9B8AA}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10192A;--card:#18243A;--ink:#E8EEF6;--mute:#9AABC2;--line:#2B3A55;--cobalt:#7FA8E0;--wash:#22314D;--blush:#E9B8AA}}
 :root[data-theme="dark"]{--bg:#10192A;--card:#18243A;--ink:#E8EEF6;--mute:#9AABC2;--line:#2B3A55;--cobalt:#7FA8E0;--wash:#22314D;--blush:#E9B8AA}
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.5 "Instrument Sans",system-ui,sans-serif}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 "Instrument Sans",system-ui,sans-serif;
+padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 main{max-width:720px;margin:0 auto;padding:28px 18px 60px}
 h1{font:400 2rem/1.15 "Young Serif",Georgia,serif;margin:0 0 10px}
 h2{font:400 1.4rem/1.2 "Young Serif",Georgia,serif;margin:0 0 8px}
@@ -44,6 +44,17 @@ td:last-child{text-align:right;white-space:nowrap}
 .ph{display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mute);font-size:.85rem;border:1px dashed var(--line);background:var(--wash);padding:8px}
 .foto.ph{float:right}
 .aviso{border-left:6px solid var(--blush);background:var(--wash);border-radius:10px;padding:12px 16px;margin:16px 0}
+/* CTA e prova social */
+.cta{margin-top:24px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.cta h2{margin:0 0 6px}
+.cta p{margin:0 0 14px;color:var(--mute)}
+.cta-btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-block;padding:11px 18px;border-radius:999px;background:var(--cobalt);color:#fff;text-decoration:none;font-weight:600;border:1px solid var(--cobalt);text-align:center}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn:hover{opacity:.9}
+.prova{margin-top:18px;display:grid;gap:10px}
+.prova blockquote{margin:0;padding:10px 14px;border-left:4px solid var(--blush);background:var(--wash);border-radius:8px;font-size:.95rem}
+.prova cite{display:block;margin-top:4px;color:var(--mute);font-style:normal;font-size:.85rem}
 [hidden]{display:none}
 </style>
 </head>
@@ -63,7 +74,7 @@ td:last-child{text-align:right;white-space:nowrap}
 <input id="conv" type="number" min="10" max="600" value="100">
 <label for="pct">Participação: <b id="pctv"></b> dos convidados</label>
 <input id="pct" type="range" min="10" max="100" step="5" value="60">
-<p class="hint">Nem todos passam pela mesa. Em geral, de 40% a 70%. Cada aquarela retrata um casal, e famílias maiores entram na mesma aquarela. Estimativa: <b id="qtd"></b> aquarelas.</p>
+<p class="hint">Nem todos passam pela mesa. O slider vai de 10% a 100%; na prática, 40% a 70% é o mais comum. Cada aquarela retrata um casal ou uma família pequena (média de 2,5 pessoas por aquarela). Estimativa: <b id="qtd"></b> aquarelas; cabem <b id="cabem"></b> no tempo escolhido.</p>
 <label for="dia">Dia da festa</label>
 <select id="dia"></select>
 <label for="loc">Local</label>
@@ -81,7 +92,7 @@ td:last-child{text-align:right;white-space:nowrap}
 <legend>3. Acabamento e extras</legend>
 <label class="chk"><input type="checkbox" id="env"><span>Envelope e cartão com dedicatória<small id="envp"></small></span></label>
 <label class="chk"><input type="checkbox" id="mol"><span>Moldura pequena com passe-partout<small id="molp"></small></span></label>
-<label class="chk"><input type="checkbox" id="noi"><span>Pintura ao vivo dos noivos, em tamanho maior (A5)<small id="noip"></small></span></label>
+<label class="chk"><input type="checkbox" id="noi"><span>Pintura dos noivos em A5, feita antes da festa e entregue no dia<small id="noip"></small></span></label>
 <label class="chk"><input type="checkbox" id="aj"><span>Ajudante para organizar a fila e secar as aquarelas<small id="ajp"></small></span></label>
 </fieldset>
 
@@ -92,6 +103,21 @@ td:last-child{text-align:right;white-space:nowrap}
 <table id="tab"></table>
 <p class="note" id="trab"></p>
 <p class="note">Valores de referência para iniciarmos a conversa. A proposta final pode mudar conforme local, data, detalhes do evento e uso das imagens.</p>
+</section>
+
+<!-- TODO: troque o número do WhatsApp e a mensagem abaixo pelos seus -->
+<section class="cta">
+<h2>Quer reservar uma data?</h2>
+<p>Me chama no WhatsApp com a data e o número de convidados. Respondo em até um dia útil.</p>
+<div class="cta-btns">
+<a class="btn" href="https://wa.me/5551999999999?text=Oi%20Bruno!%20Quero%20um%20or%C3%A7amento%20de%20aquarelas%20para%20meu%20casamento.%20Data%3A%20____%20Convidados%3A%20____" target="_blank" rel="noopener">Falar no WhatsApp</a>
+<a class="btn ghost" href="https://instagram.com/unspredinhos" target="_blank" rel="noopener">@unspredinhos</a>
+</div>
+<!-- SUBSTITUA pelos depoimentos reais -->
+<div class="prova">
+<blockquote>“Os convidados adoraram. Virou a lembrança mais disputada da festa.”<cite>— Marina &amp; Rafa, casamento em Porto Alegre</cite></blockquote>
+<blockquote>“A aquarela ficou linda e o processo foi super tranquilo.”<cite>— Carla &amp; Beto, Novo Hamburgo</cite></blockquote>
+</div>
 </section>
 </section>
 
@@ -113,17 +139,18 @@ td:last-child{text-align:right;white-space:nowrap}
 const FOTOS = { artista: "", exemplos: ["", "", ""] };
 // ====== VALORES EDITÁVEIS (Bruno ajusta aqui) ======
 const P = {
-  faixas: [ // preço por aquarela (de um casal) conforme quantidade
-    {ate:30, v:80},{ate:60, v:70},{ate:9999, v:60}
+  faixas: [ // preço por aquarela (de um casal/família) conforme quantidade
+    {ate:30, v:80},{ate:9999, v:70}
   ],
-  minPorAquarela: 15,          // minutos para pintar cada uma (média)
+  minPorAquarela: 9,          // minutos para pintar cada uma (média)
+  pessoasPorAquarela: 2.5,    // média de pessoas por aquarela (casal ou família pequena)
   mesaFixa: 450, horasInclusas: 2, horaExtra: 130,
-  dias: [{n:"Dia de semana", m:0},{n:"Sábado ou domingo", m:0.1},{n:"Feriado ou alta temporada", m:0.25}],
+  dias: [{n:"Dia de semana", m:0},{n:"Sábado ou domingo", m:0.15},{n:"Feriado ou alta temporada", m:0.25}],
   locais: [
     {n:"Porto Alegre", v:0},
-    {n:"Região metropolitana", v:200},
-    {n:"Interior do RS, até 150 km", v:600},
-    {n:"Outra cidade (hospedagem e viagem à parte)", v:1200}
+    {n:"Região metropolitana", v:250},
+    {n:"Interior do RS, até 150 km", v:900},
+    {n:"Outra cidade (hospedagem e viagem inclusas)", v:1800}
   ],
   envelope: 8, moldura: 70, noivos: 420, ajudante: 350
 };
@@ -139,13 +166,14 @@ $("noip").textContent="+ "+brl(P.noivos);
 $("ajp").textContent="+ "+brl(P.ajudante);
 function calc(){
   const conv=+$("conv").value||0, pct=+$("pct").value, hrs=+$("hrs").value;
-  const est=Math.max(1,Math.round(conv*pct/100/2));
+  const est=Math.max(1,Math.round(conv*pct/100/P.pessoasPorAquarela));
   const capN=Math.max(1,Math.floor(hrs*60/P.minPorAquarela));
   const n=Math.min(est,capN);
-  $("pctv").textContent=pct+"%"; $("hrsv").textContent=hh(hrs)+" h"; $("qtd").textContent=est;
+  $("pctv").textContent=pct+"%"; $("hrsv").textContent=hh(hrs)+" h";
+  $("qtd").textContent=est; $("cabem").textContent=capN;
   const need=Math.max(P.horasInclusas,Math.ceil(n*P.minPorAquarela/60*2)/2);
   $("cap").textContent= est>capN
-    ? "Com "+hh(hrs)+" h cabem cerca de "+capN+" aquarelas. Para atender as "+est+" estimadas seriam necessárias "+hh(Math.ceil(est*P.minPorAquarela/60*2)/2)+" h."
+    ? "Com "+hh(hrs)+" h cabem cerca de "+capN+" aquarelas. Para atender as "+est+" estimadas seriam necessárias "+hh(Math.ceil(est*P.minPorAquarela/60*2)/2)+" h. Você pode aumentar as horas ou reduzir a participação."
     : "Com "+hh(hrs)+" h cabem cerca de "+capN+" aquarelas, o suficiente para as "+est+" estimadas.";
   const loc=P.locais[$("loc").value], dm=P.dias[$("dia").value].m;
   const base=P.faixas.find(f=>n<=f.ate).v;
@@ -155,11 +183,11 @@ function calc(){
   if(loc.v) rows.push(["Deslocamento",loc.v]);
   if($("env").checked) rows.push(["Envelope e cartão",P.envelope*n]);
   if($("mol").checked) rows.push(["Molduras pequenas",P.moldura*n]);
-  if($("noi").checked) rows.push(["Pintura ao vivo dos noivos (A5)",P.noivos]);
+  if($("noi").checked) rows.push(["Pintura dos noivos (A5)",P.noivos]);
   if($("aj").checked) rows.push(["Ajudante",P.ajudante]);
   const tot=rows.reduce((s,r)=>s+r[1],0);
   $("tot").textContent=brl(tot);
-  $("por").textContent="Cerca de "+brl(tot/Math.max(1,conv))+" por convidado da festa, ou "+brl(tot/n)+" por aquarela.";
+  $("por").textContent="Cerca de "+brl(tot/Math.max(1,conv))+" por convidado da festa, ou "+brl(tot/n)+" por aquarela ("+n+" aquarelas).";
   $("tab").innerHTML=rows.map(r=>"<tr><td>"+r[0]+"</td><td>"+brl(r[1])+"</td></tr>").join("");
   $("trab").textContent="Cada aquarela leva em média "+P.minPorAquarela+" minutos, por isso o tempo de mesa define quantos casais podem ser atendidos.";
 }
