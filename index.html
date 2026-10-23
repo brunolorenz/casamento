@@ -39,15 +39,25 @@ td:last-child{text-align:right;white-space:nowrap}
 .note{font-size:.85rem;color:var(--mute);margin-top:14px}
 .about p{max-width:60ch}
 .foto{width:160px;height:160px;border-radius:50%;object-fit:cover;float:right;margin:0 0 10px 16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
-.ex{aspect-ratio:3/2;width:100%;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
-.ph{display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mute);font-size:.85rem;border:1px dashed var(--line);background:var(--wash);padding:8px}
-.foto.ph{float:right}
+/* Galeria de exemplos - imagens grandes e clicáveis */
+.grid{display:grid;grid-template-columns:1fr;gap:16px;margin:20px 0}
+@media (min-width:480px){.grid{grid-template-columns:repeat(2,1fr)}}
+.ex-link{display:block;border-radius:10px;overflow:hidden;border:1px solid var(--line);transition:transform .2s, box-shadow .2s;background:var(--card)}
+.ex-link:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.ex{aspect-ratio:4/3;width:100%;object-fit:cover;display:block}
+.ph{display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mute);font-size:.9rem;border:1px dashed var(--line);background:var(--wash);padding:20px;border-radius:10px;aspect-ratio:4/3}
+.foto.ph{float:right;aspect-ratio:1/1;border-radius:50%;padding:10px;width:160px;height:160px}
 .aviso{border-left:6px solid var(--blush);background:var(--wash);border-radius:10px;padding:12px 16px;margin:16px 0}
 /* Tempo de mesa calculado, com destaque */
 .tempo{margin-top:16px;padding:12px 14px;background:var(--wash);border:1px solid var(--line);border-left:4px solid var(--cobalt);border-radius:10px;font-size:.95rem}
 .tempo b{font-weight:600}
-.tempo.aviso-tempo{border-left-color:var(--blush)}
+/* Faixas de preço dinâmicas */
+.faixas-ui{display:flex;gap:8px;margin-top:12px}
+.faixa-item{flex:1;text-align:center;padding:10px 6px;border:1px solid var(--line);border-radius:8px;background:var(--bg);transition:all .2s;cursor:default}
+.faixa-item.active{border-color:var(--cobalt);background:var(--wash);box-shadow:0 0 0 1px var(--cobalt);transform:translateY(-2px)}
+.faixa-qtd{display:block;font-size:.8rem;color:var(--mute);margin-bottom:2px}
+.faixa-item.active .faixa-qtd{color:var(--cobalt);font-weight:600}
+.faixa-preco{display:block;font-weight:600;font-size:1.05rem}
 /* CTA e prova social */
 .cta{margin-top:24px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
 .cta h2{margin:0 0 6px}
@@ -79,8 +89,9 @@ td:last-child{text-align:right;white-space:nowrap}
 <p class="hint">Cada aquarela retrata um casal ou uma família pequena (média de 2,5 pessoas por aquarela).</p>
 
 <label for="aq">Número aproximado de aquarelas (10×15 cm)</label>
-<input id="aq" type="number" min="1" max="42" value="24">
+<input id="aq" type="number" min="1" max="30" value="24">
 <p class="hint" id="sug"></p>
+<div class="faixas-ui" id="faixasUI"></div>
 
 <div class="tempo" id="capBox">
   <span id="cap"></span>
@@ -99,8 +110,8 @@ td:last-child{text-align:right;white-space:nowrap}
 <legend>3. Acabamento e extras</legend>
 <label class="chk"><input type="checkbox" id="env"><span>Envelope e cartão com dedicatória<small id="envp"></small></span></label>
 <label class="chk"><input type="checkbox" id="mol"><span>Moldura pequena com passe-partout<small id="molp"></small></span></label>
-<label class="chk"><input type="checkbox" id="noi"><span>Pintura dos noivos em A5, feita antes da festa e entregue no dia<small id="noip"></small></span></label>
-<label class="chk"><input type="checkbox" id="aj"><span>Ajudante para organizar a fila e secar as aquarelas<small id="ajp"></small></span></label>
+<label class="chk"><input type="checkbox" id="noi"><span>Pintura dos noivos em A4 (30x21cm), feita antes da festa e entregue no dia<small id="noip"></small></span></label>
+<p class="hint" style="margin-top:12px">Ajudante obrigatório a partir de 10 aquarelas para organizar a fila e secar as peças (R$ 100/h).</p>
 </fieldset>
 
 <section class="total" aria-live="polite">
@@ -156,11 +167,11 @@ const FOTOS = {
 // ====== VALORES EDITÁVEIS (Bruno ajusta aqui) ======
 const P = {
   faixas: [ // preço por aquarela conforme quantidade
-    {ate:20, v:120},
-    {ate:40, v:110},
-    {ate:9999, v:100}
+    {ate:15, v:120},
+    {ate:25, v:110},
+    {ate:30, v:100}
   ],
-  minPorAquarela: 10,          // minutos por aquarela (média)
+  minPorAquarela: 12,          // minutos por aquarela (inclui transição/pausas curtas)
   pessoasPorAquarela: 2.5,
   mesaFixa: 450, horasInclusas: 2, horaExtra: 130,
   dias: [{n:"Dia de semana", m:0},{n:"Sábado ou domingo", m:0.15},{n:"Feriado ou alta temporada", m:0.25}],
@@ -170,7 +181,7 @@ const P = {
     {n:"Interior do RS, até 150 km", v:900},
     {n:"Outra cidade (hospedagem e viagem inclusas)", v:1800}
   ],
-  envelope: 8, moldura: 70, noivos: 420, ajudanteHora: 100
+  envelope: 8, moldura: 70, noivos: 600, ajudanteHora: 100
 };
 // ====================================================
 const $ = id => document.getElementById(id);
@@ -181,23 +192,33 @@ P.locais.forEach((t,i)=>$("loc").add(new Option(t.n+(t.v?" (+"+brl(t.v)+")":""),
 $("envp").textContent="+ "+brl(P.envelope)+" por aquarela";
 $("molp").textContent="+ "+brl(P.moldura)+" por aquarela";
 $("noip").textContent="+ "+brl(P.noivos);
-$("ajp").textContent="+ "+brl(P.ajudanteHora)+" por hora de mesa";
+
+// Renderizar as faixas na tela
+$("faixasUI").innerHTML = P.faixas.map((f, i) => {
+  const prev = i === 0 ? 1 : P.faixas[i-1].ate + 1;
+  return `<div class="faixa-item" data-index="${i}">
+    <span class="faixa-qtd">${prev} a ${f.ate} un.</span>
+    <span class="faixa-preco">${brl(f.v)}</span>
+  </div>`;
+}).join("");
 
 function calc(){
   const conv=+$("conv").value||0;
-  const n=Math.max(1,Math.min(42,+$("aq").value||1));
+  const n=Math.max(1,Math.min(30,+$("aq").value||1)); // teto de 30
   const need=Math.max(P.horasInclusas,Math.ceil(n*P.minPorAquarela/60*2)/2);
-  const capN=Math.floor(6*60/P.minPorAquarela); // capacidade em 6 h
-  const alerta = n>capN;
-  const base=P.faixas.find(f=>n<=f.ate).v;
+  
+  const faixaIndex = P.faixas.findIndex(f => n <= f.ate);
+  const base=P.faixas[faixaIndex].v;
+
+  // Destacar a faixa atual
+  document.querySelectorAll(".faixa-item").forEach((el, i) => {
+    el.classList.toggle("active", i === faixaIndex);
+  });
 
   const sug=Math.max(1,Math.round(conv/P.pessoasPorAquarela));
-  $("sug").textContent="Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas. Você pode ajustar o número acima. Nesta quantidade, cada aquarela sai por "+brl(base)+".";
+  $("sug").textContent="Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas.";
 
-  $("cap").innerHTML = alerta
-    ? "<b>Tempo de mesa:</b> "+n+" aquarelas exigem <b>"+hh(Math.ceil(n*P.minPorAquarela/60*2)/2)+" h</b> de mesa, acima do limite usual de 6 h. Considere reduzir o número ou conversar sobre um segundo artista."
-    : "<b>Tempo de mesa calculado:</b> cerca de <b>"+hh(need)+" h</b> para "+n+" aquarelas (cada peça leva em média "+P.minPorAquarela+" min).";
-  $("capBox").classList.toggle("aviso-tempo",alerta);
+  $("cap").innerHTML = "<b>Tempo de mesa calculado:</b> cerca de <b>"+hh(need)+" h</b> para "+n+" aquarelas (cada peça leva em média "+P.minPorAquarela+" min, já incluindo pequenas pausas).";
 
   const loc=P.locais[$("loc").value], dm=P.dias[$("dia").value].m;
   const rows=[[n+" aquarelas × "+brl(base),base*n]];
@@ -206,23 +227,28 @@ function calc(){
   if(loc.v) rows.push(["Deslocamento",loc.v]);
   if($("env").checked) rows.push(["Envelope e cartão",P.envelope*n]);
   if($("mol").checked) rows.push(["Molduras pequenas",P.moldura*n]);
-  if($("noi").checked) rows.push(["Pintura dos noivos (A5)",P.noivos]);
-  if($("aj").checked) rows.push(["Ajudante ("+hh(need)+" h × "+brl(P.ajudanteHora)+")",P.ajudanteHora*need]);
+  if($("noi").checked) rows.push(["Pintura dos noivos (A4)",P.noivos]);
+  
+  if(n >= 10) {
+    rows.push(["Ajudante ("+hh(need)+" h × "+brl(P.ajudanteHora)+")",P.ajudanteHora*need]);
+  }
+  
   const tot=rows.reduce((s,r)=>s+r[1],0);
   $("tot").textContent=brl(tot);
   $("por").textContent="Cerca de "+brl(tot/Math.max(1,conv))+" por convidado da festa, ou "+brl(tot/n)+" por aquarela ("+n+" aquarelas).";
   $("tab").innerHTML=rows.map(r=>"<tr><td>"+r[0]+"</td><td>"+brl(r[1])+"</td></tr>").join("");
-  $("trab").textContent="Cada aquarela leva em média "+P.minPorAquarela+" minutos, por isso o número de aquarelas define o tempo de mesa.";
+  $("trab").textContent="Cada aquarela leva em média "+P.minPorAquarela+" minutos. O cálculo de horas já considera o ritmo real de trabalho durante a festa.";
 }
 document.querySelectorAll("#p1 input,#p1 select").forEach(e=>e.addEventListener("input",calc));
 calc();
 
-// fotos
+// fotos e links
 $("foto").innerHTML = FOTOS.artista
   ? '<img class="foto" alt="Bruno Lorenz" src="'+FOTOS.artista+'">'
   : '<div class="foto ph">Foto do artista</div>';
+
 $("exs").innerHTML = FOTOS.exemplos.map((s,i)=> s
-  ? '<img class="ex" alt="Exemplo de aquarela '+(i+1)+'" src="'+s+'">'
+  ? '<a href="'+s+'" target="_blank" rel="noopener" class="ex-link"><img class="ex" alt="Exemplo de aquarela '+(i+1)+'" src="'+s+'"></a>'
   : '<div class="ex ph">Exemplo '+(i+1)+'</div>'
 ).join("");
 
