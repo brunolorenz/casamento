@@ -44,6 +44,10 @@ td:last-child{text-align:right;white-space:nowrap}
 .ph{display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mute);font-size:.85rem;border:1px dashed var(--line);background:var(--wash);padding:8px}
 .foto.ph{float:right}
 .aviso{border-left:6px solid var(--blush);background:var(--wash);border-radius:10px;padding:12px 16px;margin:16px 0}
+/* Tempo de mesa calculado, com destaque */
+.tempo{margin-top:16px;padding:12px 14px;background:var(--wash);border:1px solid var(--line);border-left:4px solid var(--cobalt);border-radius:10px;font-size:.95rem}
+.tempo b{font-weight:600}
+.tempo.aviso-tempo{border-left-color:var(--blush)}
 /* CTA e prova social */
 .cta{margin-top:24px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
 .cta h2{margin:0 0 6px}
@@ -74,19 +78,21 @@ td:last-child{text-align:right;white-space:nowrap}
 <input id="conv" type="number" min="10" max="600" value="100">
 <p class="hint">Cada aquarela retrata um casal ou uma família pequena (média de 2,5 pessoas por aquarela).</p>
 
-<label for="aq">Número de aquarelas que você quer</label>
-<input id="aq" type="number" min="1" max="45" value="24">
+<label for="aq">Número aproximado de aquarelas (10×15 cm)</label>
+<input id="aq" type="number" min="1" max="42" value="24">
 <p class="hint" id="sug"></p>
 
+<div class="tempo" id="capBox">
+  <span id="cap"></span>
+</div>
+</fieldset>
+
+<fieldset>
+<legend>2. Data e local</legend>
 <label for="dia">Dia da festa</label>
 <select id="dia"></select>
 <label for="loc">Local</label>
 <select id="loc"></select>
-</fieldset>
-
-<fieldset>
-<legend>2. Tempo de mesa (calculado)</legend>
-<p class="hint" id="cap"></p>
 </fieldset>
 
 <fieldset>
@@ -138,14 +144,23 @@ td:last-child{text-align:right;white-space:nowrap}
 </main>
 
 <script>
-// ====== FOTOS: cole aqui imagens em data URI (ou peça ao Claude para embutir) ======
-const FOTOS = { artista: "", exemplos: ["", "", ""] };
+// ====== FOTOS: caminhos relativos ao repositório ======
+const FOTOS = {
+  artista: "img/perfil.jpeg",
+  exemplos: [
+    "img/IMG_5029.jpeg",
+    "",
+    ""
+  ]
+};
 // ====== VALORES EDITÁVEIS (Bruno ajusta aqui) ======
 const P = {
-  faixas: [
-    {ate:30, v:80},{ate:9999, v:70}
+  faixas: [ // preço por aquarela conforme quantidade
+    {ate:20, v:120},
+    {ate:40, v:110},
+    {ate:9999, v:100}
   ],
-  minPorAquarela: 9,
+  minPorAquarela: 10,          // minutos por aquarela (média)
   pessoasPorAquarela: 2.5,
   mesaFixa: 450, horasInclusas: 2, horaExtra: 130,
   dias: [{n:"Dia de semana", m:0},{n:"Sábado ou domingo", m:0.15},{n:"Feriado ou alta temporada", m:0.25}],
@@ -155,7 +170,7 @@ const P = {
     {n:"Interior do RS, até 150 km", v:900},
     {n:"Outra cidade (hospedagem e viagem inclusas)", v:1800}
   ],
-  envelope: 8, moldura: 70, noivos: 420, ajudante: 350
+  envelope: 8, moldura: 70, noivos: 420, ajudanteHora: 100
 };
 // ====================================================
 const $ = id => document.getElementById(id);
@@ -166,29 +181,25 @@ P.locais.forEach((t,i)=>$("loc").add(new Option(t.n+(t.v?" (+"+brl(t.v)+")":""),
 $("envp").textContent="+ "+brl(P.envelope)+" por aquarela";
 $("molp").textContent="+ "+brl(P.moldura)+" por aquarela";
 $("noip").textContent="+ "+brl(P.noivos);
-$("ajp").textContent="+ "+brl(P.ajudante);
-
-// Sugestão inicial e ao mudar convidados
-function sugerirAquarelas(){
-  const conv=+$("conv").value||0;
-  const sug=Math.max(1,Math.round(conv/P.pessoasPorAquarela));
-  $("sug").textContent="Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas. Você pode ajustar o número acima.";
-}
-$("conv").addEventListener("input",sugerirAquarelas);
-sugerirAquarelas();
+$("ajp").textContent="+ "+brl(P.ajudanteHora)+" por hora de mesa";
 
 function calc(){
   const conv=+$("conv").value||0;
-  const n=Math.max(1,Math.min(45,+$("aq").value||1)); // teto de 45 por noite
+  const n=Math.max(1,Math.min(42,+$("aq").value||1));
   const need=Math.max(P.horasInclusas,Math.ceil(n*P.minPorAquarela/60*2)/2);
-  const capN=Math.floor(6*60/P.minPorAquarela); // capacidade máxima em 6h, para aviso
+  const capN=Math.floor(6*60/P.minPorAquarela); // capacidade em 6 h
+  const alerta = n>capN;
+  const base=P.faixas.find(f=>n<=f.ate).v;
 
-  $("cap").textContent = n>capN
-    ? "Atenção: "+n+" aquarelas exigem "+hh(Math.ceil(n*P.minPorAquarela/60*2)/2)+" h de mesa, acima do limite usual de 6 h. Considere reduzir o número ou conversar sobre um segundo artista."
-    : "Para "+n+" aquarelas, o tempo de mesa necessário é de "+hh(need)+" h (cada peça leva em média "+P.minPorAquarela+" min).";
+  const sug=Math.max(1,Math.round(conv/P.pessoasPorAquarela));
+  $("sug").textContent="Sugestão para "+conv+" convidados: cerca de "+sug+" aquarelas. Você pode ajustar o número acima. Nesta quantidade, cada aquarela sai por "+brl(base)+".";
+
+  $("cap").innerHTML = alerta
+    ? "<b>Tempo de mesa:</b> "+n+" aquarelas exigem <b>"+hh(Math.ceil(n*P.minPorAquarela/60*2)/2)+" h</b> de mesa, acima do limite usual de 6 h. Considere reduzir o número ou conversar sobre um segundo artista."
+    : "<b>Tempo de mesa calculado:</b> cerca de <b>"+hh(need)+" h</b> para "+n+" aquarelas (cada peça leva em média "+P.minPorAquarela+" min).";
+  $("capBox").classList.toggle("aviso-tempo",alerta);
 
   const loc=P.locais[$("loc").value], dm=P.dias[$("dia").value].m;
-  const base=P.faixas.find(f=>n<=f.ate).v;
   const rows=[[n+" aquarelas × "+brl(base),base*n]];
   rows.push(["Presença e mesa ("+hh(need)+" h)",P.mesaFixa+Math.max(0,need-P.horasInclusas)*P.horaExtra]);
   if(dm) rows.push(["Acréscimo de data ("+Math.round(dm*100)+"%)",(rows[0][1]+rows[1][1])*dm]);
@@ -196,7 +207,7 @@ function calc(){
   if($("env").checked) rows.push(["Envelope e cartão",P.envelope*n]);
   if($("mol").checked) rows.push(["Molduras pequenas",P.moldura*n]);
   if($("noi").checked) rows.push(["Pintura dos noivos (A5)",P.noivos]);
-  if($("aj").checked) rows.push(["Ajudante",P.ajudante]);
+  if($("aj").checked) rows.push(["Ajudante ("+hh(need)+" h × "+brl(P.ajudanteHora)+")",P.ajudanteHora*need]);
   const tot=rows.reduce((s,r)=>s+r[1],0);
   $("tot").textContent=brl(tot);
   $("por").textContent="Cerca de "+brl(tot/Math.max(1,conv))+" por convidado da festa, ou "+brl(tot/n)+" por aquarela ("+n+" aquarelas).";
@@ -207,8 +218,13 @@ document.querySelectorAll("#p1 input,#p1 select").forEach(e=>e.addEventListener(
 calc();
 
 // fotos
-$("foto").innerHTML = FOTOS.artista ? '<img class="foto" alt="Bruno Lorenz" src="'+FOTOS.artista+'">' : '<div class="foto ph">Foto do artista</div>';
-$("exs").innerHTML = FOTOS.exemplos.map((s,i)=> s ? '<img class="ex" alt="Exemplo de aquarela '+(i+1)+'" src="'+s+'">' : '<div class="ex ph">Exemplo '+(i+1)+'</div>').join("");
+$("foto").innerHTML = FOTOS.artista
+  ? '<img class="foto" alt="Bruno Lorenz" src="'+FOTOS.artista+'">'
+  : '<div class="foto ph">Foto do artista</div>';
+$("exs").innerHTML = FOTOS.exemplos.map((s,i)=> s
+  ? '<img class="ex" alt="Exemplo de aquarela '+(i+1)+'" src="'+s+'">'
+  : '<div class="ex ph">Exemplo '+(i+1)+'</div>'
+).join("");
 
 // abas
 [["t1","p1"],["t2","p2"]].forEach(([t,p])=>$(t).addEventListener("click",()=>{
